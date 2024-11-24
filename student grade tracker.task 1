@@ -1,0 +1,60 @@
+class StudentGradeTracker:
+    def __init__(self):  # Fix: Use __init__ for the constructor
+        self.grades = {}
+
+    def add_subject(self, subject):
+        if subject not in self.grades:
+            self.grades[subject] = []
+        else:
+            print(f"Subject '{subject}' already exists.")
+
+    def add_grade(self, subject, grade):
+        if subject in self.grades:
+            self.grades[subject].append(grade)
+        else:
+            print(f"Subject '{subject}' does not exist. Please add it first.")
+
+    def calculate_overall_grade(self):
+        total_score = 0
+        total_assignments = 0
+        for subject, grades in self.grades.items():
+            total_score += sum(grades)
+            total_assignments += len(grades)
+        return total_score / total_assignments if total_assignments > 0 else 0
+
+    def display_report(self):
+        if not self.grades:
+            print("No grades to display.")
+            return
+
+        print("Student Grade Report:")
+        overall_grades = []
+
+        for subject, grades in self.grades.items():
+            if grades:
+                avg = sum(grades) / len(grades)
+                overall_grades.append((subject, avg))
+                print(f"- {subject}: Grades = {grades}, Average = {avg:.2f}")
+            else:
+                print(f"- {subject}: No grades yet.")
+
+        overall_grade = self.calculate_overall_grade()
+        print(f"\nOverall Grade: {overall_grade:.2f}")
+
+        if overall_grades:
+            best_subject = max(overall_grades, key=lambda x: x[1])
+            worst_subject = min(overall_grades, key=lambda x: x[1])
+            print(f"Best Subject: {best_subject[0]} with Average Grade = {best_subject[1]:.2f}")
+            print(f"Worst Subject: {worst_subject[0]} with Average Grade = {worst_subject[1]:.2f}")
+        else:
+            print("No subjects with grades to evaluate.")
+
+# Example Usage
+tracker = StudentGradeTracker()
+tracker.add_subject("Math")
+tracker.add_subject("Science")
+tracker.add_grade("Math", 85)
+tracker.add_grade("Math", 90)
+tracker.add_grade("Science", 78)
+tracker.add_grade("Science", 82)
+tracker.display_report()
