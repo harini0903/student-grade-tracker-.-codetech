@@ -1,0 +1,135 @@
+//library management system
+import datetime
+
+class LibraryItem:
+    def __init__(self, title, item_type):
+        self.title = title
+        self.item_type = item_type
+        self.is_checked_out = False
+        self.due_date = None
+
+    def checkout(self, days=14):
+        if self.is_checked_out:
+            print(f"Error: Item '{self.title}' is already checked out.")
+            return False
+        self.is_checked_out = True
+        self.due_date = datetime.date.today() + datetime.timedelta(days=days)
+        print(f"Item '{self.title}' checked out successfully. Due date: {self.due_date}")
+        return True
+
+    def return_item(self):
+        if not self.is_checked_out:
+            print(f"Error: Item '{self.title}' is not currently checked out.")
+            return False
+        self.is_checked_out = False
+        self.due_date = None
+        print(f"Item '{self.title}' returned successfully.")
+        return True
+
+    def is_overdue(self):
+        return self.is_checked_out and datetime.date.today() > self.due_date
+
+
+class Library:
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, title, item_type):
+        new_item = LibraryItem(title, item_type)
+        self.items.append(new_item)
+        print(f"New {item_type} added: '{title}'")
+
+    def checkout_item(self, title):
+        for item in self.items:
+            if item.title.lower() == title.lower():
+                if item.checkout():
+                    return
+                return
+        print(f"Error: Item '{title}' not found in the library.")
+
+    def return_item(self, title):
+        for item in self.items:
+            if item.title.lower() == title.lower():
+                if item.return_item():
+                    return
+                return
+        print(f"Error: Item '{title}' not found in the library.")
+
+    def list_items(self, only_available=False):
+        print("\nLibrary Items:")
+        has_items = False
+        for item in self.items:
+            if only_available and item.is_checked_out:
+                continue
+            has_items = True
+            status = "Available" if not item.is_checked_out else f"Checked out (Due: {item.due_date})"
+            print(f"- {item.title} ({item.item_type}): {status}")
+        if not has_items:
+            print("No items to display.")
+        print()
+
+    def list_overdue_items(self):
+        print("\nOverdue Items:")
+        overdue_found = False
+        for item in self.items:
+            if item.is_overdue():
+                overdue_found = True
+                print(f"- {item.title} ({item.item_type}): Due {item.due_date}")
+        if not overdue_found:
+            print("No overdue items found.")
+        print()
+
+    def search_items(self, query):
+        print(f"\nSearch Results for '{query}':")
+        found = False
+        for item in self.items:
+            if query.lower() in item.title.lower():
+                found = True
+                status = "Available" if not item.is_checked_out else f"Checked out (Due: {item.due_date})"
+                print(f"- {item.title} ({item.item_type}): {status}")
+        if not found:
+            print("No matching items found.")
+        print()
+
+
+def main():
+    library = Library()
+
+    while True:
+        print("\nLibrary Management System")
+        print("1. Add Item")
+        print("2. Checkout Item")
+        print("3. Return Item")
+        print("4. List All Items")
+        print("5. List Overdue Items")
+        print("6. Search Items")
+        print("7. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            title = input("Enter item title: ").strip()
+            item_type = input("Enter item type (e.g., Book, Magazine): ").strip()
+            library.add_item(title, item_type)
+        elif choice == "2":
+            title = input("Enter title of item to checkout: ").strip()
+            library.checkout_item(title)
+        elif choice == "3":
+            title = input("Enter title of item to return: ").strip()
+            library.return_item(title)
+        elif choice == "4":
+            only_available = input("List only available items? (yes/no): ").strip().lower() == "yes"
+            library.list_items(only_available)
+        elif choice == "5":
+            library.list_overdue_items()
+        elif choice == "6":
+            query = input("Enter search query: ").strip()
+            library.search_items(query)
+        elif choice == "7":
+            print("Exiting the system. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    main()
